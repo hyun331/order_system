@@ -37,7 +37,8 @@ public class Member extends BaseTimeEntity {
     private Address address;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    @Builder.Default
+    private Role role = Role.USER;
 
     public MemberDetResDto detFromEntity() {
         return MemberDetResDto.builder()

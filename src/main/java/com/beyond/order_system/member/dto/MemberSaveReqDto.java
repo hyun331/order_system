@@ -34,13 +34,15 @@ public class MemberSaveReqDto {
 
     private Address address;
 
+    private Role role = Role.USER;
 
-    public Member toEntity(){
+
+    public Member toEntity(String encodedPassword){
         return Member.builder()
                 .name(this.name)
                 .email(this.email)
-                .role(Role.USER)
-                .password(this.password)
+                .role(this.role)
+                .password(encodedPassword)
                 .address(this.address)
 //                .address(Address.builder().city(this.city).street(this.street).zipcode(this.zipcode).build())
                 .build();

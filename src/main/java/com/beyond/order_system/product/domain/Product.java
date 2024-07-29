@@ -47,4 +47,7 @@ public class Product extends BaseTimeEntity {
         this.imagePath = imagePath;
     }
 
+    public void updateStockQunatity(Integer productCount) {
+        this.stockQuantity -= productCount;
+    }
 }
