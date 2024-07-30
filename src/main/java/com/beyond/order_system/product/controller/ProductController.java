@@ -32,6 +32,8 @@ public class ProductController {
     //json인 경우 -> @RequestPart ProductSaveRepDto productSaveRepDto, @RequestPart MultipartFile imageFile
     public ResponseEntity<?> productCreate(ProductSaveRepDto productSaveRepDto){
         Product product = productService.productCreate(productSaveRepDto);
+//        Product product = productService.productAwsCreate(productSaveRepDto);
+
         CommonResDto commonResDto = new CommonResDto(HttpStatus.CREATED, "create successfully", product);
 
         return new ResponseEntity<>(commonResDto, HttpStatus.CREATED);

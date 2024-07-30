@@ -33,7 +33,7 @@ public class MemberSaveReqDto {
 //    private String zipcode;
 
     private Address address;
-
+    @Builder.Default
     private Role role = Role.USER;
 
 
