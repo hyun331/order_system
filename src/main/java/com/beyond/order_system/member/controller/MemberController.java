@@ -83,9 +83,9 @@ public class MemberController {
 
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getEmail(), member.getRole().toString());
 
-        //////////////////////////////////아래 주석 제거        //////////////////////////////////아래 주석 제거
+
         //redis에 email과 refresh token을 key:value로 저장
-//        redisTemplate.opsForValue().set(member.getEmail(), refreshToken, 240, TimeUnit.HOURS);  //240시간. 여기서는 시간 단위로
+        redisTemplate.opsForValue().set(member.getEmail(), refreshToken, 240, TimeUnit.HOURS);  //240시간. 여기서는 시간 단위로
 
         Map<String, Object> loginInfo = new HashMap<>();
         loginInfo.put("id", member.getId());
@@ -113,14 +113,13 @@ public class MemberController {
         String email = claims.getSubject();
         String role = claims.get("role").toString();
 
-        //////////////////////////////////아래 주석 제거        //////////////////////////////////아래 주석 제거
         //redis를 조회하여 rt추가검증
-//        Object obj = redisTemplate.opsForValue().get(email);
-//
-//        if(obj == null || !obj.toString().equals(rt)){
-//            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.UNAUTHORIZED, "invalid refresh token"), HttpStatus.UNAUTHORIZED);
-//
-//        }
+        Object obj = redisTemplate.opsForValue().get(email);
+
+        if(obj == null || !obj.toString().equals(rt)){
+            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.UNAUTHORIZED, "invalid refresh token"), HttpStatus.UNAUTHORIZED);
+
+        }
         String newAt = jwtTokenProvider.createToken(email, role);
         Map<String, Object> info = new HashMap<>();
         info.put("token", newAt);

@@ -62,7 +62,7 @@ public class OrderingService {
 
             //redis를 통한 재고관리 및 재고 잔량 확인
             if(product.getName().contains("sale")){
-                int newQuantity = stockInventoryService.decreaseStock(product.getId(), product.getStockQuantity()).intValue();
+                int newQuantity = stockInventoryService.decreaseStock(product.getId(), dto.getProductCount()).intValue();
                 if(newQuantity<0){
                     throw new IllegalArgumentException("재고 부족");
                 }

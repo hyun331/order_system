@@ -51,8 +51,8 @@ public class ProductService {
             //이미지 파일 저장시 byte로
             byte[] bytes = image.getBytes();
             //랜덤 이름으로 저장됨
-            Path path = Paths.get("C:/Users/신승현/Desktop/tmp/", product.getId()+"_"+image.getOriginalFilename());
-//            Path path = Paths.get("C:/Users/Playdata/Desktop/tmp/", product.getId()+"_"+image.getOriginalFilename());
+//            Path path = Paths.get("C:/Users/신승현/Desktop/tmp/", product.getId()+"_"+image.getOriginalFilename());
+            Path path = Paths.get("C:/Users/Playdata/Desktop/tmp/", product.getId()+"_"+image.getOriginalFilename());
             Files.write(path, bytes, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
             product.updateImagePath(path.toString());   //더티체크를 통해 변경감지함 -> 다시 save하지 않아도 됨.
         }catch (IOException e){
@@ -75,9 +75,8 @@ public class ProductService {
             byte[] bytes = image.getBytes();
 
             String fileName = product.getId()+"_"+image.getOriginalFilename();
-            //////////////////////path  변경하기/////////////////////
-//            Path path = Paths.get("C:/Users/Playdata/Desktop/tmp/", fileName);
-            Path path = Paths.get("C:/Users/신승현/Desktop/tmp/", fileName);
+            Path path = Paths.get("C:/Users/Playdata/Desktop/tmp/", fileName);
+//            Path path = Paths.get("C:/Users/신승현/Desktop/tmp/", fileName);
 
 
             //local pc에 임시 저장
