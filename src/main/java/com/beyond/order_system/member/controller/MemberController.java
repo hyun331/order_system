@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -49,6 +50,7 @@ public class MemberController {
 
     @PostMapping("/create") //@Valid - 이 데이터를 validation 해볼거다
     public ResponseEntity<CommonResDto> createMember(@Valid @RequestBody MemberSaveReqDto memberSaveReqDto){
+        System.out.println("create\n\n\n\n");
         MemberDetResDto memberDetResDto = memberService.memberCreate(memberSaveReqDto);
         CommonResDto commonResDto = new CommonResDto(HttpStatus.CREATED, "member is successfully created", memberDetResDto);
         return new ResponseEntity<>(commonResDto, HttpStatus.CREATED);
@@ -56,10 +58,19 @@ public class MemberController {
 
     //admin만 회원목록 전체 조회 가능
     //ROLE_안붙여도됨
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @GetMapping("/list")
+//    public ResponseEntity<CommonResDto> memberList(@PageableDefault(size = 10, sort = "createdTime", direction = Sort.Direction.DESC)Pageable pageable){
+//        Page<MemberListResDto> memberListResDtos = memberService.memberList(pageable);
+//        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "members are found", memberListResDtos);
+//        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+//    }
+
+    //List버정
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
-    public ResponseEntity<CommonResDto> memberList(@PageableDefault(size = 10, sort = "createdTime", direction = Sort.Direction.DESC)Pageable pageable){
-        Page<MemberListResDto> memberListResDtos = memberService.memberList(pageable);
+    public ResponseEntity<CommonResDto> memberList(){
+        List<MemberListResDto> memberListResDtos = memberService.memberListList();
         CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "members are found", memberListResDtos);
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }

@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class MemberService {
@@ -43,6 +45,15 @@ public class MemberService {
     public Page<MemberListResDto> memberList(Pageable pageable) {
         Page<Member> memberList = memberRepository.findAll(pageable);
         Page<MemberListResDto> memberListResDtos = memberList.map(a->a.listFromEntity());
+        return memberListResDtos;
+    }
+
+    public List<MemberListResDto> memberListList() {
+        List<Member> memberList = memberRepository.findAll();
+        List<MemberListResDto> memberListResDtos = new ArrayList<>();
+        for(Member m : memberList){
+            memberListResDtos.add(m.listFromEntity());
+        }
         return memberListResDtos;
     }
 
