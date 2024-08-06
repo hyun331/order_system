@@ -1,10 +1,7 @@
 package com.beyond.order_system.member.service;
 
 import com.beyond.order_system.member.domain.Member;
-import com.beyond.order_system.member.dto.MemberDetResDto;
-import com.beyond.order_system.member.dto.MemberListResDto;
-import com.beyond.order_system.member.dto.MemberLoginDto;
-import com.beyond.order_system.member.dto.MemberSaveReqDto;
+import com.beyond.order_system.member.dto.*;
 import com.beyond.order_system.member.repository.MemberRepository;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +12,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
-//    private final PasswordEncoder passwordEncoder;
 
     public MemberService(MemberRepository memberRepository){
         this.memberRepository = memberRepository;
@@ -73,5 +71,13 @@ public class MemberService {
 
         MemberDetResDto memberDetResDto = memberRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("member not found")).detFromEntity();
         return memberDetResDto;
+    }
+
+    public void resetPassword(MemberResetPasswordDto dto) {
+        Member member = memberRepository.findByEmail(dto.getEmail()).orElseThrow(()->new EntityNotFoundException("member not found. email X"));
+        if(!passwordEncoder.matches(dto.getAsIsPassword(), member.getPassword())){
+            throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
+        }
+        member.resetPassword(passwordEncoder.encode(dto.getToBePassword()));
     }
 }

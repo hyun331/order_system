@@ -137,6 +137,14 @@ public class MemberController {
 
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "at is renewed", info), HttpStatus.OK);
     }
+
+    @PatchMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody MemberResetPasswordDto dto){
+        memberService.resetPassword(dto);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "비밀번호 변경 성공", "ok");
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+
+    }
     
     
 }
