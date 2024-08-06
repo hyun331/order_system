@@ -117,7 +117,7 @@ public class MemberController {
             //코드를 통해 rt 검증
             claims = Jwts.parser().setSigningKey(secretKeyRt).parseClaimsJws(rt).getBody();
         }catch (Exception e){
-            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.UNAUTHORIZED, "invalid refresh token"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.BAD_REQUEST, "invalid refresh token"), HttpStatus.BAD_REQUEST);
         }
 
         //access token 새로 발급해야함
@@ -128,7 +128,7 @@ public class MemberController {
         Object obj = redisTemplate.opsForValue().get(email);
 
         if(obj == null || !obj.toString().equals(rt)){
-            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.UNAUTHORIZED, "invalid refresh token"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.BAD_REQUEST, "invalid refresh token"), HttpStatus.BAD_REQUEST);
 
         }
         String newAt = jwtTokenProvider.createToken(email, role);
