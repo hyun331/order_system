@@ -36,7 +36,6 @@ public class OrderingController {
     //로그인 후
     @PostMapping("/create")
     public ResponseEntity<?> orderingCreate(@RequestBody List<OrderingReqDto> orderingReqDto){
-        System.out.println("creategk\n\n\n\n");
         Ordering ordering = orderingService.orderingCreate(orderingReqDto);
         //entity 자체를 리턴하면 순환참조에 빠질 수 있다!
         CommonResDto commonResDto = new CommonResDto(HttpStatus.CREATED, "ordering create", ordering.getId());

@@ -4,11 +4,13 @@ import com.beyond.order_system.common.service.StockInventoryService;
 import com.beyond.order_system.product.domain.Product;
 import com.beyond.order_system.product.dto.ProductResDto;
 import com.beyond.order_system.product.dto.ProductSaveRepDto;
+import com.beyond.order_system.product.dto.ProductSearchDto;
 import com.beyond.order_system.product.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,11 +19,16 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -101,8 +108,35 @@ public class ProductService {
         return product;
     }
 
-    public Page<ProductResDto> productList(Pageable pageable){
-        return productRepository.findAll(pageable).map(a->a.fromEntity());
+    public Page<ProductResDto> productList(ProductSearchDto searchDto, Pageable pageable){
+        //검색을 위해 specification 객체 사용
+        //specification객체는 복잡한 쿼리를 명세를 이용하여 정의하는 방식으로, 쿼리를 쉽게 생성
+        Specification<Product> specification = new Specification<Product>() {
+            @Override
+            public Predicate toPredicate(Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+
+                List<Predicate> predicates = new ArrayList<>();
+                if(searchDto.getSearchName() != null){
+                    //root는 에티티의 속성에 접근하기 위한 객쳋, criterialBuilder는 쿼리를 생성하기 위한 객체
+                    predicates.add(criteriaBuilder.like(root.get("name"), "%"+searchDto.getSearchName()+"%"));
+                }
+                if(searchDto.getCategory() != null){
+                    predicates.add(criteriaBuilder.like(root.get("category"), "%"+searchDto.getCategory()+"%"));
+                }
+
+                Predicate[] predicateArr = new Predicate[predicates.size()];
+                for(int i=0; i<predicateArr.length; i++){
+                    predicateArr[i] = predicates.get(i);
+                }
+                Predicate predicate = criteriaBuilder.and(predicateArr);
+
+
+                return predicate;
+            }
+        };
+        Page<Product> products = productRepository.findAll(specification, pageable);
+
+        return products.map(a->a.fromEntity());
     }
 
 
