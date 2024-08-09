@@ -3,6 +3,7 @@ package com.beyond.order_system.ordering.service;
 import com.beyond.order_system.common.service.StockInventoryService;
 import com.beyond.order_system.member.domain.Member;
 import com.beyond.order_system.member.repository.MemberRepository;
+import com.beyond.order_system.ordering.controller.SseController;
 import com.beyond.order_system.ordering.domain.OrderDetail;
 import com.beyond.order_system.ordering.domain.OrderStatus;
 import com.beyond.order_system.ordering.domain.Ordering;
@@ -33,14 +34,18 @@ public class OrderingService {
     private final StockInventoryService stockInventoryService;
     //rabbitmq 사용을 위해
     private final StockDecreaseEventHandler stockDecreaseEventHandler;
+
+    //알림을 위해
+    private final SseController sseController;
     @Autowired
-    public OrderingService(OrderingRepository orderingRepository, MemberRepository memberRepository, ProductRepository productRepository, OrderDetailRepository orderDetailRepository, StockInventoryService stockInventoryService, StockDecreaseEventHandler stockDecreaseEventHandler) {
+    public OrderingService(OrderingRepository orderingRepository, MemberRepository memberRepository, ProductRepository productRepository, OrderDetailRepository orderDetailRepository, StockInventoryService stockInventoryService, StockDecreaseEventHandler stockDecreaseEventHandler, SseController sseController) {
         this.orderingRepository = orderingRepository;
         this.memberRepository = memberRepository;
         this.productRepository = productRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.stockInventoryService = stockInventoryService;
         this.stockDecreaseEventHandler = stockDecreaseEventHandler;
+        this.sseController = sseController;
     }
 
     //synchronize 키워드를 붙이면 문제없지 않나? 한번에 한스레드만 이 메서드를 쓰기 때문
@@ -100,7 +105,17 @@ public class OrderingService {
         }
 
         Ordering savedOrdering = orderingRepository.save(ordering);
+
+        ///////주문을 하면 알림주기
+        //admin@naver.com 에게 publish한다
+        sseController.publishMessage(savedOrdering.fromEntity(), "admin@naver.com");
+
+
         return savedOrdering;
+
+
+
+
 
 
 
