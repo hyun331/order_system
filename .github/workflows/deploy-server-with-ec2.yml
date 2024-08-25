@@ -31,7 +31,7 @@ jobs:
       
 
 #      jar파일 전송
-      - name: copy jar to ec2
+      - name: copy jar to ec2 my-instance
         uses: appleboy/scp-action@master
         with:
 #          인스턴스 my-instance의 도메인 주소
@@ -44,7 +44,7 @@ jobs:
 
 #      위에 설치한건 github에서 제공한 임시 컴퓨터
 #      지금은 ec2에 java 설치 apt-get install java 이거 할 예정
-      - name: install java and run jar on ec2
+      - name: install java and run jar on ec2 my-instance
 #        이 컴퓨터로 들어갈 예정
         uses: appleboy/ssh-action@master
         with:
@@ -52,6 +52,39 @@ jobs:
           username: ubuntu
           key: ${{secrets.EC2_PEMKEY}}
 #          shell programming. | 이건 여러 줄인 경우  사용
+          script: |
+            if ! type java > /dev/null; then
+              sudo apt-get update && sudo apt-get install openjdk-11-jdk -y
+            else
+              echo "java is already installed"
+            fi
+            sudo killall java
+            nohup java -jar /home/ubuntu/build/libs/*.jar \
+            --spring.redis.host=${{secrets.REDIS_HOST}} \
+            --spring.datasource.url=jdbc:mariadb://${{secrets.DB_HOST}}:3306/order_system \
+            --spring.datasource.username=admin \
+            --spring.datasource.password=${{secrets.DB_PW}} \
+            --cloud.aws.credentials.access-key=${{secrets.S3_KEY}} \
+            --cloud.aws.credentials.secret-key=${{secrets.S3_SECRET}} > /home/ubuntu/app.log 2>&1 &
+
+
+#####################인스턴스 두번째 꺼#########################
+      - name: copy jar to ec2 my-instance2
+        uses: appleboy/scp-action@master
+        with:
+          #          인스턴스 my-instance2의 도메인 주소
+          host: ec2-15-165-77-21.ap-northeast-2.compute.amazonaws.com
+          username: ubuntu
+          key: ${{secrets.EC2_PEMKEY}}
+          source: "./build/libs/*.jar"
+          target: "/home/ubuntu"
+
+      - name: install java and run jar on ec2 my-instance2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ec2-15-165-77-21.ap-northeast-2.compute.amazonaws.com
+          username: ubuntu
+          key: ${{secrets.EC2_PEMKEY}}
           script: |
             if ! type java > /dev/null; then
               sudo apt-get update && sudo apt-get install openjdk-11-jdk -y
