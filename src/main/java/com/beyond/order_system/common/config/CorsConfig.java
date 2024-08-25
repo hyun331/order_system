@@ -11,7 +11,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry) {
         corsRegistry.addMapping("/**")
-                .allowedOrigins("http://localhost:8081")    //허용 url 명시 //카카오 redirect시 여기에
+                .allowedOrigins("https://www.seunghyun.shop")    //허용 url 명시 //카카오 redirect시 여기에
                 .allowedMethods("*")    //get, post, ...
                 .allowedHeaders("*")
                 .allowCredentials(true);

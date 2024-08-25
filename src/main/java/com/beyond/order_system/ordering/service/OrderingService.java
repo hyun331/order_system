@@ -33,18 +33,18 @@ public class OrderingService {
     //재고 redis를 이용하여 체크
     private final StockInventoryService stockInventoryService;
     //rabbitmq 사용을 위해
-    private final StockDecreaseEventHandler stockDecreaseEventHandler;
+//    private final StockDecreaseEventHandler stockDecreaseEventHandler;
 
     //알림을 위해
     private final SseController sseController;
     @Autowired
-    public OrderingService(OrderingRepository orderingRepository, MemberRepository memberRepository, ProductRepository productRepository, OrderDetailRepository orderDetailRepository, StockInventoryService stockInventoryService, StockDecreaseEventHandler stockDecreaseEventHandler, SseController sseController) {
+    public OrderingService(OrderingRepository orderingRepository, MemberRepository memberRepository, ProductRepository productRepository, OrderDetailRepository orderDetailRepository, StockInventoryService stockInventoryService, /*StockDecreaseEventHandler stockDecreaseEventHandler,*/ SseController sseController) {
         this.orderingRepository = orderingRepository;
         this.memberRepository = memberRepository;
         this.productRepository = productRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.stockInventoryService = stockInventoryService;
-        this.stockDecreaseEventHandler = stockDecreaseEventHandler;
+//        this.stockDecreaseEventHandler = stockDecreaseEventHandler;
         this.sseController = sseController;
     }
 
@@ -78,7 +78,7 @@ public class OrderingService {
                 //queueing 서비스 : rabbit MQ, kafka
                 //MQ : message queue를 사용하여 해결. 요청을 que에 담아뒀다가(publish) spring이 listen해서 가져가서 rdb에 적용
                 //rabbitmq를 통해 비동기적으로 이벤트 처리
-                stockDecreaseEventHandler.publish(new StockDecreaseEvent(product.getId(), dto.getProductCount()));
+//                stockDecreaseEventHandler.publish(new StockDecreaseEvent(product.getId(), dto.getProductCount()));
 
             }
             else{

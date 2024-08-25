@@ -1,0 +1,43 @@
+name: deploy to ec2 with jar
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout branch
+        uses: actions/checkout@v2
+
+#      자바 설치
+      - name: setup java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+#          temurin이란걸 많이 사용함. oracle java이런거..
+          distribution: 'temurin'
+
+#      build(명령어 : ./gradlew bootJar(build))
+#      bootJar : 실행 가능한 jar 파일만
+#      build : 실행 가능한 jar, plain jar
+      - name: build jar
+        working-directory: .
+        run: |
+          chmod 777 ./gradlew
+          ./gradlew bootJar
+      
+
+#      jar파일 전송
+      - name: copy jar to ec2
+        uses: appleboy/scp-action@master
+        with:
+#          인스턴스 my-instance의 도메인 주소
+          host: ec2-43-202-40-173.ap-northeast-2.compute.amazonaws.com
+          username: ubuntu
+#          pemkey를 통해 해당 인스턴스에 접근
+          key: ${{secrets.EC2_PEMKEY}}
+          source: "./build/libs/*.jar"
+          target: "/home/ubuntu"
