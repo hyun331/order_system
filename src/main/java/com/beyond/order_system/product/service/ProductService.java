@@ -83,8 +83,7 @@ public class ProductService {
             byte[] bytes = image.getBytes();
 
             String fileName = product.getId()+"_"+image.getOriginalFilename();
-            Path path = Paths.get("C:/Users/Playdata/Desktop/tmp/", fileName);
-//            Path path = Paths.get("C:/Users/신승현/Desktop/tmp/", fileName);
+            Path path = Paths.get("/tmp/", fileName);
 
 
             //local pc에 임시 저장
