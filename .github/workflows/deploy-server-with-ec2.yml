@@ -35,7 +35,7 @@ jobs:
         uses: appleboy/scp-action@master
         with:
 #          인스턴스 my-instance의 도메인 주소
-          host: ec2-43-202-40-173.ap-northeast-2.compute.amazonaws.com
+          host: ec2-43-202-68-92.ap-northeast-2.compute.amazonaws.com
           username: ubuntu
 #          pemkey를 통해 해당 인스턴스에 접근
           key: ${{secrets.EC2_PEMKEY}}
@@ -48,7 +48,7 @@ jobs:
 #        이 컴퓨터로 들어갈 예정
         uses: appleboy/ssh-action@master
         with:
-          host: ec2-43-202-40-173.ap-northeast-2.compute.amazonaws.com
+          host: ec2-43-202-68-92.ap-northeast-2.compute.amazonaws.com
           username: ubuntu
           key: ${{secrets.EC2_PEMKEY}}
 #          shell programming. | 이건 여러 줄인 경우  사용
@@ -73,7 +73,7 @@ jobs:
         uses: appleboy/scp-action@master
         with:
           #          인스턴스 my-instance2의 도메인 주소
-          host: ec2-15-165-77-21.ap-northeast-2.compute.amazonaws.com
+          host: ec2-43-201-146-238.ap-northeast-2.compute.amazonaws.com
           username: ubuntu
           key: ${{secrets.EC2_PEMKEY}}
           source: "./build/libs/*.jar"
@@ -82,7 +82,7 @@ jobs:
       - name: install java and run jar on ec2 my-instance2
         uses: appleboy/ssh-action@master
         with:
-          host: ec2-15-165-77-21.ap-northeast-2.compute.amazonaws.com
+          host: ec2-43-201-146-238.ap-northeast-2.compute.amazonaws.com
           username: ubuntu
           key: ${{secrets.EC2_PEMKEY}}
           script: |
