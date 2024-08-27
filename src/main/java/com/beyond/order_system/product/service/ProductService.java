@@ -52,20 +52,23 @@ public class ProductService {
         Product product = null;
         try{
             product = productRepository.save(productSaveRepDto.toEntity());
-            //상품을 등록하면 redis에도 등록해주면 됨
-            if(productSaveRepDto.getName().contains("sale")){
-                stockInventoryService.increaseStock(product.getId(), product.getStockQuantity());
-            }
-            //이미지 파일 저장시 byte로
             byte[] bytes = image.getBytes();
-            //랜덤 이름으로 저장됨
-//            Path path = Paths.get("C:/Users/신승현/Desktop/tmp/", product.getId()+"_"+image.getOriginalFilename());
-            Path path = Paths.get("C:/Users/Playdata/Desktop/tmp/", product.getId()+"_"+image.getOriginalFilename());
-            Files.write(path, bytes, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-            product.updateImagePath(path.toString());   //더티체크를 통해 변경감지함 -> 다시 save하지 않아도 됨.
-        }catch (IOException e){
-            throw new RuntimeException("이미지 저장 실패");
+            String fileName = product.getId()+ "_" + image.getOriginalFilename();
+//            Path path = Paths.get("C:/Users/Playdata/Desktop/tmp", fileName);
+            Path path = Paths.get("/tmp/", fileName);
+            Files.write(path, bytes, StandardOpenOption.CREATE, StandardOpenOption.WRITE); // local pc에 임시 저장
+//            aws에 pc에 저장된 파일을 업로드
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(fileName)
+                    .build();
+            PutObjectResponse putObjectResponse = s3Client.putObject(putObjectRequest, RequestBody.fromFile(path));
+            String s3Path = s3Client.utilities().getUrl(a->a.bucket(bucket).key(fileName)).toExternalForm();
+            product.updateImagePath(s3Path);
+        }catch (IOException e){ // 트라이-캐치 때문에 트랜잭션 처리때문에
+            throw new RuntimeException("이미지 저장 실패"); // 여기서 예외를 던져용
         }
+
 
         return product;
     }
