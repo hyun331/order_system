@@ -19,8 +19,8 @@ jobs:
       - name: docker hub login
         uses: docker/login-actiona@v1
         with:
-          username: ${{secreats.DOCKER_EMAIL}}
-          password: ${{secreats.DOCKER_PASSWORD}}
+          username: ${{secrets.DOCKER_EMAIL}}
+          password: ${{secrets.DOCKER_PASSWORD}}
       
       - name: push to docker hub
         run: docker push shinseunghyun/ordersystem:latest .
